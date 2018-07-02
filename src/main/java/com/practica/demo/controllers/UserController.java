@@ -1,7 +1,9 @@
 package com.practica.demo.controllers;
 
 import java.io.IOException;
+import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +39,12 @@ public class UserController {
 		this.userService.save(user);
 		return new RestResponse(HttpStatus.OK.value(), "Operacion Exitosa!!!");
 	}
+	
+	@RequestMapping(value="/getUsers", method=RequestMethod.GET)
+	public List<User> getUsers() {
+		return this.userService.findAll();
+		
+	}
 	private boolean validate(User user) {
 		
 		boolean isValid=true;
@@ -48,7 +56,7 @@ public class UserController {
 		if(user.getFirst_surname()=="" || user.getFirst_surname()==null) {
 			isValid=false;
 		}
-		if(user.getSecond_surname()=="" || user.getSecond_surname()==null) {
+		if(StringUtils.trimToNull(user.getSecond_surname())==null) {
 			isValid=false;
 		}
 		if(user.getAddress()=="" || user.getAddress()==null) {
