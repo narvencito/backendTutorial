@@ -20,49 +20,66 @@ import com.practica.demo.util.RestResponse;
 
 @RestController
 public class UserController {
-	
+
 	@Autowired
 	protected UserService userService;
-	
+
 	protected ObjectMapper mapper;
-	
-	@RequestMapping(value="/saveOrUpdate",method=RequestMethod.POST)
-	public RestResponse saveOrUpdate(@RequestBody String userJson) throws JsonParseException, JsonMappingException, IOException {
-		this.mapper=new ObjectMapper();
-		
-		User user=this.mapper.readValue(userJson, User.class);
-		
-		if(!this.validate(user)) {
-			return new RestResponse(HttpStatus.NOT_ACCEPTABLE.value(),"los Campos Obligatorios tienen que ser llenados");
+
+	@RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST)
+	public RestResponse saveOrUpdate(@RequestBody String userJson)
+			throws JsonParseException, JsonMappingException, IOException {
+		this.mapper = new ObjectMapper();
+
+		User user = this.mapper.readValue(userJson, User.class);
+
+		if (!this.validate(user)) {
+			return new RestResponse(HttpStatus.NOT_ACCEPTABLE.value(),
+					"los Campos Obligatorios tienen que ser llenados");
 		}
-		
+
 		this.userService.save(user);
 		return new RestResponse(HttpStatus.OK.value(), "Operacion Exitosa!!!");
 	}
-	
-	@RequestMapping(value="/getUsers", method=RequestMethod.GET)
+
+	@RequestMapping(value = "/getUsers", method = RequestMethod.GET)
 	public List<User> getUsers() {
 		return this.userService.findAll();
-		
+
 	}
+
+	@RequestMapping(value = "/deleteUser", method = RequestMethod.POST)
+	public void deleteUser(@RequestBody String userJson) throws Exception {
+		
+		this.mapper = new ObjectMapper();
+
+		User user = this.mapper.readValue(userJson, User.class);
+		
+		if(user.getId()==null) {
+			throw new Exception("El id esta nulo");
+		}
+		
+		this.userService.deleteUser(user.getId());
+	}
+
 	private boolean validate(User user) {
-		
-		boolean isValid=true;
-		
-		if(user.getFirst_name()=="" || user.getFirst_name()==null) {
-			isValid=false;
+
+		boolean isValid = true;
+
+		if (user.getFirst_name() == "" || user.getFirst_name() == null) {
+			isValid = false;
 		}
-		
-		if(user.getFirst_surname()=="" || user.getFirst_surname()==null) {
-			isValid=false;
+
+		if (user.getFirst_surname() == "" || user.getFirst_surname() == null) {
+			isValid = false;
 		}
-		if(StringUtils.trimToNull(user.getSecond_surname())==null) {
-			isValid=false;
+		if (StringUtils.trimToNull(user.getSecond_surname()) == null) {
+			isValid = false;
 		}
-		if(user.getAddress()=="" || user.getAddress()==null) {
-			isValid=false;
+		if (user.getAddress() == "" || user.getAddress() == null) {
+			isValid = false;
 		}
-		
+
 		return isValid;
 	}
 
